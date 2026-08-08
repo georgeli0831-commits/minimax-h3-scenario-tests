@@ -67,6 +67,10 @@ def api_inputs(
     converted: dict[str, object] = {}
     for input_def in node.get("inputs", []):
         name = input_def["name"]
+        # Browser upload controls select a local file for the canvas only.  The
+        # API must receive the already-uploaded filename, never this UI field.
+        if str(input_def.get("type", "")).endswith("UPLOAD"):
+            continue
         link_id = input_def.get("link")
         if link_id is not None:
             link = link_map[link_id]
