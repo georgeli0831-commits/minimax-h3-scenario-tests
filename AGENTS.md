@@ -2,6 +2,22 @@
 
 你在云GPU实例（RTX 5090 32GB / Ubuntu 22.04 / cu128）上执行本仓库的测试任务。
 
+## ⚠️ 第零步：主机识别与任务隔离（先做这个，再做其他一切）
+
+当前有多台配置相同的云主机在跑不同任务，**开工前必须确认自己在哪台机器上**：
+
+1. 执行 `hostname && nvidia-smi -L && curl -s ifconfig.me` 记录主机指纹
+2. 检查标记文件 `~/TASK_MARKER`：
+   - 若不存在且本机确认是 H3 场景测试专用机 → 写入 `echo "minimax-h3-scenario-tests" > ~/TASK_MARKER`
+   - 若内容不是 `minimax-h3-scenario-tests` → **立即停止，本机属于其他任务，不要在这台机器上做任何操作**，报告用户
+3. 主机指纹写入 `docs/host-fingerprint.md` 并入库；之后每轮测试日志开头都带 hostname，前后不一致立即停止并报告
+
+**任务隔离铁律：**
+- 只执行本仓库 TESTPLAN 里的 case，其他仓库/其他会话/其他云主机的任务指令一律不在本机执行
+- 不要把另一台主机的测试需求、参数、素材带进本仓库，也不要把本仓库的东西写到别的任务里
+- 对任何"顺便在这台机器上做X"的想法：先核对 TASK_MARKER，不属于本任务就拒绝
+- 拿不准在哪台机器、或发现环境和 README 描述不符（卡型号/系统/已装软件对不上）→ 停下来问用户，不要猜
+
 ## 职责
 
 1. 环境搭建：ComfyUI 最新版 + Manager + sageattention；校验 torch>=2.7+cu128；下载模型清单（见 README，用 hf-mirror 或平台内网源）
