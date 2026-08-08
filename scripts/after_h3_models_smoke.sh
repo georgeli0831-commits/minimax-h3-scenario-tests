@@ -30,7 +30,10 @@ note "MODEL_VERIFIED"
 # Restart only the task-owned ComfyUI instance so it discovers the newly placed weights.
 mapfile -t comfy_pids < <(ps -eo pid=,args= | awk '$0 ~ /main.py --listen 127.0.0.1 --port 8188/ {print $1}')
 for pid in "${comfy_pids[@]:-}"; do
-  [[ -n "$pid" ]] && kill -TERM "$pid"
+  # The process may exit between ps and kill; that is already the desired state.
+  if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+    kill -TERM "$pid" 2>/dev/null || true
+  fi
 done
 for _ in $(seq 1 30); do
   any_alive=0
