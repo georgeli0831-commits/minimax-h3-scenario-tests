@@ -1,0 +1,8 @@
+scenario-*/outputs/*.mp4
+scenario-*/outputs/*.mov
+scenario-*/outputs/*.webm
+assets/**/*.mp4
+assets/**/*.wav
+assets/**/*.mp3
+*.safetensors
+__pycache__/
